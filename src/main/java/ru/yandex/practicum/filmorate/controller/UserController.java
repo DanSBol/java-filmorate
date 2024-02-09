@@ -9,15 +9,14 @@ import ru.yandex.practicum.filmorate.exceptions.*;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Slf4j
 @RestController
 @RequestMapping("/users")
 public class UserController {
 
-    private final List<User> users = new ArrayList<>();
+    private final Map<Integer, User> users = new HashMap<>();
     private int id = 0;
 
     @PostMapping
@@ -29,18 +28,16 @@ public class UserController {
             user = new User(user.getLogin(), user.getLogin(), user.getEmail(), user.getBirthday());
             user.setId(tempId);
         }
-        users.add(user);
+        users.put(user.getId(), user);
         return user;
     }
 
     @PutMapping
     public User update(@Valid @RequestBody User user) {
         log.info("Updating user {}", user);
-        for (User item : users) {
-            if (user.getId() == item.getId()) {
-                users.remove(item);
-                user.setId(item.getId());
-                users.add(user);
+        for (Map.Entry<Integer, User> entry : users.entrySet()) {
+            if (entry.getKey() == user.getId()) {
+                entry.setValue(user);
                 return user;
             }
         }
@@ -48,8 +45,8 @@ public class UserController {
     }
 
     @GetMapping
-    public List<User> findAll() {
-        return users;
+    public Collection<User> findAll() {
+        return users.values();
     }
 
     void validate(User user) throws ValidationException {

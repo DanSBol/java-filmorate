@@ -9,33 +9,30 @@ import ru.yandex.practicum.filmorate.model.Film;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Slf4j
 @RestController
 @RequestMapping("/films")
 public class FilmController {
 
-    private final List<Film> films = new ArrayList<>();
+    private final Map<Integer, Film> films = new HashMap<>();
     private int id = 0;
 
     @PostMapping
     public Film create(@Valid @RequestBody Film film) {
         log.info("Creating film {}", film);
         film.setId(++id);
-        films.add(film);
+        films.put(film.getId(), film);
         return film;
     }
 
     @PutMapping
     public Film update(@Valid @RequestBody Film film) {
         log.info("Updating film {}", film);
-        for (Film item : films) {
-            if (film.getId() == item.getId()) {
-                films.remove(item);
-                film.setId(item.getId());
-                films.add(film);
+        for (Map.Entry<Integer, Film> entry : films.entrySet()) {
+            if (entry.getKey() == film.getId()) {
+                entry.setValue(film);
                 return film;
             }
         }
@@ -43,10 +40,9 @@ public class FilmController {
     }
 
     @GetMapping
-    public List<Film> findAll() {
-        return films;
+    public Collection<Film> findAll() {
+        return films.values();
     }
-
 
     void validate(Film film) throws ValidationException {
         if (film.getName() == null || film.getName().isEmpty()) {
