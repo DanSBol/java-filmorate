@@ -30,11 +30,9 @@ public class FilmController {
     @PutMapping
     public Film update(@Valid @RequestBody Film film) {
         log.info("Updating film {}", film);
-        for (Map.Entry<Integer, Film> entry : films.entrySet()) {
-            if (entry.getKey() == film.getId()) {
-                entry.setValue(film);
-                return film;
-            }
+        if (films.containsKey(film.getId())) {
+            films.put(film.getId(), film);
+            return film;
         }
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "HTTP Status will be BAD REQUEST (CODE 400)\n");
     }

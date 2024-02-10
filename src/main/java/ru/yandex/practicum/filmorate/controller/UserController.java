@@ -35,11 +35,9 @@ public class UserController {
     @PutMapping
     public User update(@Valid @RequestBody User user) {
         log.info("Updating user {}", user);
-        for (Map.Entry<Integer, User> entry : users.entrySet()) {
-            if (entry.getKey() == user.getId()) {
-                entry.setValue(user);
-                return user;
-            }
+        if (users.containsKey(user.getId())) {
+            users.put(user.getId(), user);
+            return user;
         }
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "HTTP Status will be BAD REQUEST (CODE 400)\n");
     }
