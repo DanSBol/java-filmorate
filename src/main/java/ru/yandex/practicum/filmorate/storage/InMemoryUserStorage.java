@@ -16,7 +16,9 @@ public class InMemoryUserStorage implements UserStorage {
     @Setter
     private int id;
 
-    public InMemoryUserStorage() { this.id = 0; }
+    public InMemoryUserStorage() {
+        this.id = 0;
+    }
 
     @Override
     public Optional<User> get(int id) {
