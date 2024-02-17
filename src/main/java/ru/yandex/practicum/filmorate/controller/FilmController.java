@@ -1,14 +1,11 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
-import ru.yandex.practicum.filmorate.exceptions.*;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
-import java.time.LocalDate;
 import java.util.*;
 
 @Slf4j
@@ -16,45 +13,53 @@ import java.util.*;
 @RequestMapping("/films")
 public class FilmController {
 
-    private final Map<Integer, Film> films = new HashMap<>();
-    private int id = 0;
+    private final FilmService filmService;
 
+    public FilmController(FilmService filmService) {
+        this.filmService = filmService;
+    }
+
+    @GetMapping("/{id}")
+    public Film get(@PathVariable(value = "id") Integer id) {
+        return filmService.get(id);
+    }
     @PostMapping
     public Film create(@Valid @RequestBody Film film) {
-        log.info("Creating film {}", film);
-        film.setId(++id);
-        films.put(film.getId(), film);
-        return film;
+        return filmService.add(film);
     }
 
     @PutMapping
     public Film update(@Valid @RequestBody Film film) {
-        log.info("Updating film {}", film);
-        if (films.containsKey(film.getId())) {
-            films.put(film.getId(), film);
-            return film;
-        }
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "HTTP Status will be BAD REQUEST (CODE 400)\n");
+        return filmService.update(film);
+    }
+
+    @DeleteMapping
+    public void delete() {
+        filmService.delete();
     }
 
     @GetMapping
-    public Collection<Film> findAll() {
-        return films.values();
+    public Collection<Film> getAll() {
+        return filmService.getAll();
     }
 
-    void validate(Film film) throws ValidationException {
-        if (film.getName() == null || film.getName().isEmpty()) {
-            throw new ValidationException(("Film name invalid"));
-        }
-        if (film.getDescription() != null && film.getDescription().length() > 200) {
-            throw new ValidationException("Film description invalid");
-        }
-        if (film.getReleaseDate() == null || film.getReleaseDate().isBefore(LocalDate.of(1895,12,
-                28))) {
-            throw new ValidationException("Film release date invalid");
-        }
-        if (film.getDuration() <= 0) {
-            throw new ValidationException("Film duration invalid");
-        }
+    @PutMapping("/{id}/like/{userId}")
+    public Film addLike(
+            @PathVariable(value = "id") Integer id,
+            @PathVariable(value = "userId") Integer userId) {
+        return filmService.addLike(id, userId);
+    }
+
+    @DeleteMapping("/{id}/like/{userId}")
+    public Film deleteLike(
+            @PathVariable(value = "id") Integer id,
+            @PathVariable(value = "userId") Integer userId) {
+        return filmService.deleteLike(id, userId);
+    }
+
+    @GetMapping("/popular")
+    public Collection<Film> getPopular(
+            @RequestParam(value = "count", defaultValue = "10", required = false) Integer count) {
+        return filmService.getPopular(count);
     }
 }
