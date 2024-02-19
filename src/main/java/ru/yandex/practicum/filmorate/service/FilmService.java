@@ -24,11 +24,9 @@ public class FilmService {
 
     public Film get(int id) {
         log.info("Getting film (id = {})", id);
-        Optional<Film> optionalFilm = inMemoryFilmStorage.get(id);
-        if (optionalFilm.isEmpty()) {
-            throw new NotFoundException("Film not found.");
-        }
-        return optionalFilm.get();
+        return inMemoryFilmStorage.get(id)
+                .orElseThrow(() -> new NotFoundException("Film not found."));
+
     }
 
     public Film add(Film film) {

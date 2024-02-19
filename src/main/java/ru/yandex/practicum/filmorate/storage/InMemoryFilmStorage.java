@@ -1,7 +1,5 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -13,21 +11,12 @@ import java.util.stream.Collectors;
 public class InMemoryFilmStorage implements FilmStorage {
     private final Map<Integer, Film> films = new HashMap<>();
 
-    @Getter
-    @Setter
-    private int id;
-
-    public InMemoryFilmStorage() {
-        this.id = 0;
-    }
+    private int id = 0;
 
     @Override
     public Optional<Film> get(int id) {
-        if (films.containsKey(id)) {
-            films.get(id);
-            return Optional.of(films.get(id));
-        }
-        return Optional.empty();
+        Film film = films.get(id);
+        return film != null ? Optional.of(film) : Optional.empty();
     }
 
     @Override

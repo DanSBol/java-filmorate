@@ -1,7 +1,5 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
@@ -12,21 +10,12 @@ import java.util.*;
 public class InMemoryUserStorage implements UserStorage {
     private final Map<Integer, User> users = new HashMap<>();
 
-    @Getter
-    @Setter
-    private int id;
-
-    public InMemoryUserStorage() {
-        this.id = 0;
-    }
+    private int id = 0;
 
     @Override
     public Optional<User> get(int id) {
-        if (users.containsKey(id)) {
-            users.get(id);
-            return Optional.of(users.get(id));
-        }
-        return Optional.empty();
+        User user = users.get(id);
+        return user != null ? Optional.of(user) : Optional.empty();
     }
 
     @Override

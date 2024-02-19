@@ -25,11 +25,8 @@ public class UserService {
 
     public User get(int id) {
         log.info("Getting user (id = {})", id);
-        Optional<User> optionalUser = inMemoryUserStorage.get(id);
-        if (optionalUser.isEmpty()) {
-            throw new NotFoundException("User not found.");
-        }
-        return optionalUser.get();
+        return inMemoryUserStorage.get(id)
+                .orElseThrow(() -> new NotFoundException("User not found."));
     }
 
     public User add(User user) {
