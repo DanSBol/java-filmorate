@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
+import org.hamcrest.core.Is;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
@@ -218,7 +220,8 @@ class UserControllerTest {
                 h -> {
                     assertEquals(200, h.getResponse().getStatus());
                     String expectedResponse = "{\"login\":\"UserLoginOne\",\"name\":\"One user name\"," +
-                            "\"email\":\"userOne@mail.ru\",\"birthday\":\"2000-04-01\",\"id\":1,\"friends\":[3]}";
+                            "\"email\":\"userOne@mail.ru\",\"birthday\":\"2000-04-01\",\"id\":1," +
+                            "\"friends\":[{\"userId\":3,\"confirmed\":false}]}";
                     assertEquals(expectedResponse, h.getResponse().getContentAsString());
                 }
         );
@@ -228,7 +231,8 @@ class UserControllerTest {
                 h -> {
                     assertEquals(200, h.getResponse().getStatus());
                     String expectedResponse = "[{\"login\":\"UserLoginThree\",\"name\":\"Three user name\"," +
-                            "\"email\":\"userThree@mail.ru\",\"birthday\":\"2000-04-03\",\"id\":3,\"friends\":[1]}]";
+                            "\"email\":\"userThree@mail.ru\",\"birthday\":\"2000-04-03\",\"id\":3," +
+                    "\"friends\":[{\"userId\":1,\"confirmed\":false}]}]";
                     assertEquals(expectedResponse, h.getResponse().getContentAsString());
                 }
         );
@@ -238,7 +242,8 @@ class UserControllerTest {
                 h -> {
                     assertEquals(200, h.getResponse().getStatus());
                     String expectedResponse = "{\"login\":\"UserLoginTwo\",\"name\":\"Two user name\"," +
-                            "\"email\":\"userTwo@mail.ru\",\"birthday\":\"2000-04-02\",\"id\":2,\"friends\":[3]}";
+                            "\"email\":\"userTwo@mail.ru\",\"birthday\":\"2000-04-02\",\"id\":2," +
+                            "\"friends\":[{\"userId\":3,\"confirmed\":false}]}";
                     assertEquals(expectedResponse, h.getResponse().getContentAsString());
                 }
         );
@@ -247,9 +252,14 @@ class UserControllerTest {
                 .contentType("application/json")).andDo(
                 h -> {
                     assertEquals(200, h.getResponse().getStatus());
-                    String expectedResponse = "[{\"login\":\"UserLoginThree\",\"name\":\"Three user name\"," +
-                            "\"email\":\"userThree@mail.ru\",\"birthday\":\"2000-04-03\",\"id\":3,\"friends\":[1,2]}]";
-                    assertEquals(expectedResponse, h.getResponse().getContentAsString());
+                    String expectedResponseOne = "[{\"login\":\"UserLoginThree\",\"name\":\"Three user name\"," +
+                            "\"email\":\"userThree@mail.ru\",\"birthday\":\"2000-04-03\",\"id\":3," +
+                            "\"friends\":[{\"userId\":1,\"confirmed\":false},{\"userId\":2,\"confirmed\":false}]}]";
+                    String expectedResponseTwo = "[{\"login\":\"UserLoginThree\",\"name\":\"Three user name\"," +
+                            "\"email\":\"userThree@mail.ru\",\"birthday\":\"2000-04-03\",\"id\":3," +
+                            "\"friends\":[{\"userId\":2,\"confirmed\":false},{\"userId\":1,\"confirmed\":false}]}]";
+                    assertThat(h.getResponse().getContentAsString()).isIn(expectedResponseOne,
+                            expectedResponseTwo);
                 }
         );
 

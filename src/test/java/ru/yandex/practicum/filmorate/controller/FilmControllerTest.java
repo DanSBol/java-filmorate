@@ -31,15 +31,16 @@ class FilmControllerTest {
     @Test
     void validateFilmOk() {
         String validFilm = "{\"name\":\"Film name\",\"description\":\"Film description\"," +
-                "\"releaseDate\":\"1895-12-28\",\"duration\":100}";
+                "\"releaseDate\":\"1895-12-28\",\"duration\":100,\"genre\":\"COMEDY\"," +
+                "\"rating\":\"G\"}";
 
         mockMvc.perform(post("/films")
                 .contentType("application/json").content(validFilm)).andDo(
                         h -> {
                             assertEquals(200, h.getResponse().getStatus());
                             String expectedResponse = "{\"name\":\"Film name\",\"description\":\"Film description\"," +
-                                    "\"releaseDate\":\"1895-12-28\",\"duration\":100,\"id\":1,\"likes\":[]," +
-                                    "\"countLikes\":0}";
+                                    "\"releaseDate\":\"1895-12-28\",\"duration\":100,\"genre\":\"COMEDY\"," +
+                                    "\"rating\":\"G\",\"id\":1,\"likes\":[],\"countLikes\":0}";
                             assertEquals(expectedResponse, h.getResponse().getContentAsString());
                         }
         );
@@ -48,21 +49,22 @@ class FilmControllerTest {
                         h -> {
                             assertEquals(200, h.getResponse().getStatus());
                             String expectedResponse = "{\"name\":\"Film name\",\"description\":\"Film description\"," +
-                                    "\"releaseDate\":\"1895-12-28\",\"duration\":100,\"id\":1,\"likes\":[]," +
-                                    "\"countLikes\":0}";
+                                    "\"releaseDate\":\"1895-12-28\",\"duration\":100,\"genre\":\"COMEDY\"," +
+                                    "\"rating\":\"G\",\"id\":1,\"likes\":[],\"countLikes\":0}";
                             assertEquals(expectedResponse, h.getResponse().getContentAsString());
                         }
         );
         validFilm = "{\"name\":\"Updated film name\",\"description\":\"Updated film description\"," +
-                "\"releaseDate\":\"1895-12-28\",\"duration\":200,\"id\":1,\"likes\":[]}";
+                "\"releaseDate\":\"1895-12-28\",\"duration\":200,\"genre\":\"THRILLER\"," +
+                "\"rating\":\"PG13\",\"id\":1,\"likes\":[],\"countLikes\":0}";
         mockMvc.perform(put("/films")
                 .contentType("application/json").content(validFilm)).andDo(
                 h -> {
                     assertEquals(200, h.getResponse().getStatus());
                     assertEquals("{\"name\":\"Updated film name\"," +
-                                    "\"description\":\"Updated film description\"," +
-                                    "\"releaseDate\":\"1895-12-28\",\"duration\":200,\"id\":1,\"likes\":[]," +
-                            "\"countLikes\":0}",
+                            "\"description\":\"Updated film description\"," +
+                            "\"releaseDate\":\"1895-12-28\",\"duration\":200,\"genre\":\"THRILLER\"," +
+                            "\"rating\":\"PG13\",\"id\":1,\"likes\":[],\"countLikes\":0}",
                             h.getResponse().getContentAsString());
                 }
         );
@@ -72,13 +74,14 @@ class FilmControllerTest {
                     assertEquals(200, h.getResponse().getStatus());
                     assertEquals("[{\"name\":\"Updated film name\"," +
                                     "\"description\":\"Updated film description\"," +
-                            "\"releaseDate\":\"1895-12-28\",\"duration\":200,\"id\":1,\"likes\":[]," +
-                                    "\"countLikes\":0}]",
+                                    "\"releaseDate\":\"1895-12-28\",\"duration\":200,\"genre\":\"THRILLER\"," +
+                                    "\"rating\":\"PG13\",\"id\":1,\"likes\":[],\"countLikes\":0}]",
                             h.getResponse().getContentAsString());
                 }
         );
         validFilm = "{\"name\":\"Updated film name\",\"description\":\"Updated film description\"," +
-                "\"releaseDate\":\"1895-12-28\",\"duration\":200,\"id\":1,\"likes\":[]}";
+                "\"releaseDate\":\"1895-12-28\",\"duration\":200,\"genre\":\"THRILLER\"," +
+                "\"rating\":\"PG13\",\"id\":1,\"likes\":[],\"countLikes\":0}";
         mockMvc.perform(delete("/films")
                 .contentType("application/json").content(validFilm)).andDo(
                 h -> assertEquals(200, h.getResponse().getStatus())
@@ -96,15 +99,16 @@ class FilmControllerTest {
     @Test
     void validateNotFound() {
         String validFilm = "{\"name\":\"Film name\",\"description\":\"Film description\"," +
-                "\"releaseDate\":\"1895-12-28\",\"duration\":100}";
+                "\"releaseDate\":\"1895-12-28\",\"duration\":100,\"genre\":\"COMEDY\"," +
+                "\"rating\":\"G\"}";
 
         mockMvc.perform(post("/films")
                 .contentType("application/json").content(validFilm)).andDo(
                 h -> {
                     assertEquals(200, h.getResponse().getStatus());
                     String expectedResponse = "{\"name\":\"Film name\",\"description\":\"Film description\"," +
-                            "\"releaseDate\":\"1895-12-28\",\"duration\":100,\"id\":1,\"likes\":[]," +
-                            "\"countLikes\":0}";
+                            "\"releaseDate\":\"1895-12-28\",\"duration\":100,\"genre\":\"COMEDY\"," +
+                            "\"rating\":\"G\",\"id\":1,\"likes\":[],\"countLikes\":0}";
                     assertEquals(expectedResponse, h.getResponse().getContentAsString());
                 }
         );
@@ -113,24 +117,25 @@ class FilmControllerTest {
                 h -> {
                     assertEquals(200, h.getResponse().getStatus());
                     String expectedResponse = "[{\"name\":\"Film name\",\"description\":\"Film description\"," +
-                            "\"releaseDate\":\"1895-12-28\",\"duration\":100,\"id\":1,\"likes\":[]," +
-                            "\"countLikes\":0}]";
+                            "\"releaseDate\":\"1895-12-28\",\"duration\":100,\"genre\":\"COMEDY\"," +
+                            "\"rating\":\"G\",\"id\":1,\"likes\":[],\"countLikes\":0}]";
                     assertEquals(expectedResponse, h.getResponse().getContentAsString());
                 }
         );
         String invalidFilm = "{\"name\":\"Updated film name\",\"description\":\"Updated film description\"," +
-                "\"releaseDate\":\"1895-12-28\",\"duration\":200,\"id\":0,\"likes\":[]}";
+                "\"releaseDate\":\"1895-12-28\",\"duration\":100,\"genre\":\"COMEDY\"," +
+                "\"rating\":\"G\",\"id\":0,\"likes\":[],\"countLikes\":0}";
         mockMvc.perform(put("/films")
                 .contentType("application/json").content(invalidFilm)).andDo(
                 h -> {
-                    System.out.println(h.getResponse());
                     assertEquals(404, h.getResponse().getStatus());
                     assertEquals("{\"error\":\"Film not found.\"}",
                             h.getResponse().getContentAsString());
                 }
         );
         validFilm = "{\"name\":\"Film name\",\"description\":\"Film description\"," +
-                "\"releaseDate\":\"1895-12-28\",\"duration\":100,\"id\":1,\"likes\":[]}";
+                "\"releaseDate\":\"1895-12-28\",\"duration\":100,\"genre\":\"COMEDY\"," +
+                "\"rating\":\"G\",\"id\":1,\"likes\":[],\"countLikes\":0}";
         mockMvc.perform(delete("/films")
                 .contentType("application/json").content(validFilm)).andDo(
                 h -> assertEquals(200, h.getResponse().getStatus())
@@ -141,7 +146,8 @@ class FilmControllerTest {
     @Test
     void validateInvalidFilmName() {
         String invalidFilm = "{\"name\":\"\",\"description\":\"Film description\"," +
-                "\"releaseDate\":\"1895-12-28\",\"duration\":100}";
+                "\"releaseDate\":\"1895-12-28\",\"duration\":100,\"genre\":\"COMEDY\"," +
+                "\"rating\":\"G\",\"id\":1,\"likes\":[],\"countLikes\":0}";
 
         mockMvc.perform(post("/films")
                 .contentType("application/json").content(invalidFilm)).andDo(
@@ -165,7 +171,8 @@ class FilmControllerTest {
     void validateInvalidFilmDescription() {
         String invalidFilm = "{\"name\":\"Film name\",\"description\":\"" +
                 "f".repeat(201) + "\"," +
-                "\"releaseDate\":\"1895-12-28\",\"duration\":100}";
+                "\"releaseDate\":\"1895-12-28\",\"duration\":100,\"genre\":\"COMEDY\"," +
+                "\"rating\":\"G\",\"id\":1,\"likes\":[],\"countLikes\":0}";
 
         mockMvc.perform(post("/films")
                 .contentType("application/json").content(invalidFilm)).andDo(
@@ -188,7 +195,8 @@ class FilmControllerTest {
     @Test
     void validateInvalidFilmReleaseDate() {
         String invalidFilm = "{\"name\":\"Film name\",\"description\":\"Film description\"," +
-                "\"releaseDate\":\"1895-12-27\",\"duration\":100}";
+                "\"releaseDate\":\"1895-12-27\",\"duration\":100,\"genre\":\"COMEDY\"," +
+                "\"rating\":\"G\"}]";
 
         mockMvc.perform(post("/films")
                 .contentType("application/json").content(invalidFilm)).andDo(
@@ -211,7 +219,8 @@ class FilmControllerTest {
     @Test
     void validateInvalidFilmDuration() {
         String invalidFilm = "{\"name\":\"Film name\",\"description\":\"Film description\"," +
-                "\"releaseDate\":\"1985-12-28\",\"duration\":-1}";
+                "\"releaseDate\":\"1895-12-28\",\"duration\":-1,\"genre\":\"COMEDY\"," +
+                "\"rating\":\"G\"}";
 
         mockMvc.perform(post("/films")
                 .contentType("application/json").content(invalidFilm)).andDo(
@@ -234,19 +243,22 @@ class FilmControllerTest {
     @Test
     void validateLikes() {
         String validFilmOne = "{\"name\":\"Film name one\",\"description\":\"Film description one\"," +
-                "\"releaseDate\":\"1895-12-28\",\"duration\":100}";
+                "\"releaseDate\":\"1895-12-28\",\"duration\":100,\"genre\":\"COMEDY\"," +
+                "\"rating\":\"G\"}";
         String validFilmTwo = "{\"name\":\"Film name two\",\"description\":\"Film description two\"," +
-                "\"releaseDate\":\"1895-12-28\",\"duration\":200}";
+                "\"releaseDate\":\"1895-12-28\",\"duration\":200,\"genre\":\"COMEDY\"," +
+                "\"rating\":\"G\"}";
         String validFilmThree = "{\"name\":\"Film name three\",\"description\":\"Film description three\"," +
-                "\"releaseDate\":\"1895-12-28\",\"duration\":300}";
+                "\"releaseDate\":\"1895-12-28\",\"duration\":300,\"genre\":\"COMEDY\"," +
+                "\"rating\":\"G\"}";
 
         mockMvc.perform(post("/films")
                 .contentType("application/json").content(validFilmOne)).andDo(
                 h -> {
                     assertEquals(200, h.getResponse().getStatus());
                     String expectedResponse = "{\"name\":\"Film name one\",\"description\":\"Film description one\"," +
-                            "\"releaseDate\":\"1895-12-28\",\"duration\":100,\"id\":1,\"likes\":[]," +
-                            "\"countLikes\":0}";
+                            "\"releaseDate\":\"1895-12-28\",\"duration\":100,\"genre\":\"COMEDY\"," +
+                            "\"rating\":\"G\",\"id\":1,\"likes\":[],\"countLikes\":0}";
                     assertEquals(expectedResponse, h.getResponse().getContentAsString());
                 }
         );
@@ -261,8 +273,8 @@ class FilmControllerTest {
                 h -> {
                     assertEquals(200, h.getResponse().getStatus());
                     String expectedResponse = "{\"name\":\"Film name one\",\"description\":\"Film description one\"," +
-                            "\"releaseDate\":\"1895-12-28\",\"duration\":100,\"id\":1,\"likes\":[1]," +
-                            "\"countLikes\":1}";
+                            "\"releaseDate\":\"1895-12-28\",\"duration\":100,\"genre\":\"COMEDY\"," +
+                            "\"rating\":\"G\",\"id\":1,\"likes\":[1],\"countLikes\":1}";
                     assertEquals(expectedResponse, h.getResponse().getContentAsString());
                 }
         );
@@ -275,11 +287,12 @@ class FilmControllerTest {
                 h -> {
                     assertEquals(200, h.getResponse().getStatus());
                     String expectedResponse = "[{\"name\":\"Film name one\",\"description\":\"Film description one\"," +
-                            "\"releaseDate\":\"1895-12-28\",\"duration\":100,\"id\":1,\"likes\":[1,2]," +
-                    "\"countLikes\":2}," +
+                            "\"releaseDate\":\"1895-12-28\",\"duration\":100,\"genre\":\"COMEDY\"," +
+                            "\"rating\":\"G\",\"id\":1,\"likes\":[1,2],\"countLikes\":2}," +
                             "{\"name\":\"Film name three\",\"description\":\"Film description three\"," +
-                            "\"releaseDate\":\"1895-12-28\",\"duration\":300,\"id\":3,\"likes\":[1]," +
-                            "\"countLikes\":1}]";
+                            "\"releaseDate\":\"1895-12-28\",\"duration\":300,\"genre\":\"COMEDY\"," +
+                            "\"rating\":\"G\",\"id\":3,\"likes\":[1],\"countLikes\":1}]";
+
                             assertEquals(expectedResponse, h.getResponse().getContentAsString());
                 }
         );
@@ -289,8 +302,8 @@ class FilmControllerTest {
                 h -> {
                     assertEquals(200, h.getResponse().getStatus());
                     String expectedResponse = "{\"name\":\"Film name one\",\"description\":\"Film description one\"," +
-                            "\"releaseDate\":\"1895-12-28\",\"duration\":100,\"id\":1,\"likes\":[2]," +
-                            "\"countLikes\":1}";
+                            "\"releaseDate\":\"1895-12-28\",\"duration\":100,\"genre\":\"COMEDY\"," +
+                            "\"rating\":\"G\",\"id\":1,\"likes\":[2],\"countLikes\":1}";
                     assertEquals(expectedResponse, h.getResponse().getContentAsString());
                 }
         );

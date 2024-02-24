@@ -24,14 +24,20 @@ public class Film {
     @Positive(message = "Film duration invalid.")
     private final int duration;
     @NotNull
+    private final Genre genre;
+    @NotNull
+    private final Rating rating;
+    @NotNull
     private int id;
     private Set<Integer> likes;
 
-    public Film(String name, String description, LocalDate releaseDate, int duration) {
+    public Film(String name, String description, LocalDate releaseDate, int duration, Genre genre, Rating rating) {
         this.name = name;
         this.description = description;
         this.releaseDate = releaseDate;
         this.duration = duration;
+        this.genre = genre;
+        this.rating = rating;
         this.id = 0;
         this.likes = new HashSet<>();
     }
@@ -43,6 +49,8 @@ public class Film {
                 ", description='" + description + '\'' +
                 ", releaseDate=" + releaseDate +
                 ", duration=" + duration +
+                ", genre=" + genre +
+                ", rating=" + rating +
                 ", likes=" + likes;
         if (id == 0) {
                 result += "}";

@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.storage;
 
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
+import ru.yandex.practicum.filmorate.model.Friendship;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.*;
@@ -58,15 +59,17 @@ public class InMemoryUserStorage implements UserStorage {
         }
         User user = users.get(id);
         User friend = users.get(friendId);
-        Set<Integer> userSet = user.getFriends();
-        Set<Integer> friendSet = friend.getFriends();
-        if (!userSet.contains(friendId)) {
-            userSet.add(friendId);
+        Friendship fsForUser = new Friendship(friendId, false);
+        Friendship fsForFriend = new Friendship(id, false);
+        Set<Friendship> userSet = user.getFriends();
+        Set<Friendship> friendSet = friend.getFriends();
+        if (!userSet.contains(fsForUser)) {
+            userSet.add(fsForUser);
             user.setFriends(userSet);
             users.replace(id, user);
         }
-        if (!friendSet.contains(id)) {
-            friendSet.add(id);
+        if (!friendSet.contains(fsForFriend)) {
+            friendSet.add(fsForFriend);
             friend.setFriends(friendSet);
             users.replace(friendId, friend);
         }
@@ -83,15 +86,17 @@ public class InMemoryUserStorage implements UserStorage {
         }
         User user = users.get(id);
         User friend = users.get(friendId);
-        Set<Integer> userSet = user.getFriends();
-        Set<Integer> friendSet = friend.getFriends();
-        if (userSet.contains(friendId)) {
-            userSet.remove(friendId);
+        Friendship fsForUser = new Friendship(friendId, false);
+        Friendship fsForFriend = new Friendship(id, false);
+        Set<Friendship> userSet = user.getFriends();
+        Set<Friendship> friendSet = friend.getFriends();
+        if (userSet.contains(fsForUser)) {
+            userSet.remove(fsForUser);
             user.setFriends(userSet);
             users.replace(id, user);
         }
-        if (friendSet.contains(id)) {
-            friendSet.remove(id);
+        if (friendSet.contains(fsForFriend)) {
+            friendSet.remove(fsForFriend);
             friend.setFriends(friendSet);
             users.replace(friendId, friend);
         }
@@ -104,8 +109,8 @@ public class InMemoryUserStorage implements UserStorage {
             throw new NotFoundException(String.format("User (id = %s) not found.", id));
         }
         Collection<User> friends = new ArrayList<>();
-        for (Integer item : users.get(id).getFriends()) {
-            friends.add(users.get(item));
+        for (Friendship item : users.get(id).getFriends()) {
+            friends.add(users.get(item.getUserId()));
         }
         return friends;
     }
@@ -119,9 +124,9 @@ public class InMemoryUserStorage implements UserStorage {
             throw new NotFoundException(String.format("User (id = %s) not found.", id));
         }
         Collection<User> friends = new ArrayList<>();
-        for (Integer item : users.get(id).getFriends()) {
+        for (Friendship item : users.get(id).getFriends()) {
             if (users.get(otherId).getFriends().contains(item)) {
-                friends.add(users.get(item));
+                friends.add(users.get(item.getUserId()));
             }
         }
         return friends;

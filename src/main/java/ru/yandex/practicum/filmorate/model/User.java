@@ -24,7 +24,7 @@ public class User {
     private final LocalDate birthday;
     @NotNull
     private int id;
-    private Set<Integer> friends;
+    private Set<Friendship> friends;
 
     public User(String login, String name, String email, LocalDate birthday) {
         this.login = login;
