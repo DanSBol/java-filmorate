@@ -1,0 +1,47 @@
+Table genre {
+  id int [primary key]
+  name varchar [not null]
+}
+
+Table rating {
+  id int [primary key]
+  name varchar [not null]
+}
+
+Table films {
+  id int [primary key]
+  name varchar [not null]
+  description varchar
+  release_date date
+  duration int
+  genre_id int
+  rating_id int
+}
+
+Table users {
+  id int [primary key]
+  login varchar [not null]
+  name varchar
+  email varchar [not null]
+  birthday date
+}
+
+Table likes {
+  id int [primary key]
+  film_id int
+  user_id int
+}
+
+Table friends {
+  id int [primary key]
+  user_one_id int
+  user_two_id int
+  confirmed bool
+}
+
+Ref: films.genre_id > genre.id
+Ref: films.rating_id > rating.id
+Ref: likes.film_id > films.id
+Ref: likes.user_id > users.id
+Ref: friends.user_one_id > users.id
+Ref: friends.user_two_id > users.id

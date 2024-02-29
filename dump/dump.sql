@@ -12,7 +12,7 @@ CREATE TABLE "films" (
   "id" int PRIMARY KEY,
   "name" varchar NOT NULL,
   "description" varchar,
-  "releaseDate" date,
+  "release_date" date,
   "duration" int,
   "genre_id" int,
   "rating_id" int
@@ -34,8 +34,8 @@ CREATE TABLE "likes" (
 
 CREATE TABLE "friends" (
   "id" int PRIMARY KEY,
-  "userOne_id" int,
-  "userTwo_id" int,
+  "user_one_id" int,
+  "user_two_id" int,
   "confirmed" bool
 );
 
@@ -47,6 +47,6 @@ ALTER TABLE "likes" ADD FOREIGN KEY ("film_id") REFERENCES "films" ("id");
 
 ALTER TABLE "likes" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
 
-ALTER TABLE "friends" ADD FOREIGN KEY ("userOne_id") REFERENCES "users" ("id");
+ALTER TABLE "friends" ADD FOREIGN KEY ("user_one_id") REFERENCES "users" ("id");
 
-ALTER TABLE "friends" ADD FOREIGN KEY ("userTwo_id") REFERENCES "users" ("id");
+ALTER TABLE "friends" ADD FOREIGN KEY ("user_two_id") REFERENCES "users" ("id");
