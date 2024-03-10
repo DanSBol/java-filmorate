@@ -13,23 +13,23 @@ public class InMemoryUserStorage implements UserStorage {
     private int id = 0;
 
     @Override
-    public Optional<User> get(int id) {
+    public Optional<User> getUser(int id) {
         User user = users.get(id);
         return user != null ? Optional.of(user) : Optional.empty();
     }
 
     @Override
-    public Optional<User> add(User user) {
+    public User addUser(User user) {
         user.setId(++id);
         if (user.getName() == null || user.getName().isEmpty()) {
             user.setName(user.getLogin());
         }
         users.put(user.getId(), user);
-        return users.get(user.getId()) != null ? Optional.of(user) : Optional.empty();
+        return users.get(user.getId());
     }
 
     @Override
-    public Optional<User> update(User user) {
+    public Optional<User> updateUser(User user) {
         if (users.containsKey(user.getId())) {
             users.put(user.getId(), user);
             return Optional.of(user);
@@ -38,13 +38,13 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public void delete() {
+    public void deleteAllUsers() {
         users.clear();
         id = 0;
     }
 
     @Override
-    public Collection<User> getAll() {
+    public Collection<User> getAllUsers() {
         return users.values();
     }
 

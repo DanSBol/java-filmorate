@@ -6,15 +6,15 @@ import java.util.Collection;
 import java.util.Optional;
 
 public interface UserStorage {
-    Optional<User> get(int id);
+    Optional<User> getUser(int id);
 
-    Optional<User> add(User user);
+    User addUser(User user);
 
-    Optional<User> update(User user);
+    Optional<User> updateUser(User user);
 
-    void delete();
+    void deleteAllUsers();
 
-    Collection<User> getAll();
+    Collection<User> getAllUsers();
 
     void addToFriends(int id, int friendId);
 

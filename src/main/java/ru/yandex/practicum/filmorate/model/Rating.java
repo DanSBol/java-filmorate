@@ -1,15 +1,17 @@
 package ru.yandex.practicum.filmorate.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import javax.validation.constraints.NotNull;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 
 @Data
-@EqualsAndHashCode(exclude = {"id"})
+@EqualsAndHashCode
+@AllArgsConstructor
 public class Rating {
-    @NotNull
     private final int id;
-    //@NotBlank(message = "Rating name invalid.")
+    @Enumerated(EnumType.STRING)
     private final String name;
 }

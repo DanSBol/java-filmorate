@@ -26,148 +26,184 @@ class UserDbStorageTest {
     void get() {
         // Подготавливаем данные для теста
         UserDbStorage userStorage = new UserDbStorage(jdbcTemplate);
-        User newUser = new User("vanya123", "Ivan Petrov", "user@email.ru",
-                LocalDate.of(1990, 1, 1));
-
-        newUser.setId(userStorage.add(newUser).orElseThrow().getId());
-
+        User user = new User.UserBuilder()
+                .login("userLogin")
+                .name("user Name")
+                .email("user@yandex.ru")
+                .birthday(LocalDate.of(1990, 1, 1))
+                .build();
+        user.setId((userStorage.addUser(user).getId()));
         // вызываем тестируемый метод
-        Optional<User> optSavedUser = userStorage.get(newUser.getId());
+        Optional<User> optSavedUser = userStorage.getUser(user.getId());
         assertTrue(optSavedUser.isPresent());
         User savedUser = optSavedUser.get();
         // проверяем утверждения
         assertThat(savedUser)
                 .isNotNull()
                 .usingRecursiveComparison()
-                .isEqualTo(newUser);
+                .isEqualTo(user);
     }
 
     @Test
     void update() {
         // Подготавливаем данные для теста
         UserDbStorage userStorage = new UserDbStorage(jdbcTemplate);
-        User newUser = new User("vanya123", "Ivan Petrov", "user@email.ru",
-                LocalDate.of(1990, 1, 1));
-        newUser.setId(userStorage.add(newUser).orElseThrow().getId());
-
+        User user = new User.UserBuilder()
+                .login("userLogin")
+                .name("user Name")
+                .email("user@yandex.ru")
+                .birthday(LocalDate.of(1990, 1, 1))
+                .build();
+        user.setId((userStorage.addUser(user).getId()));
         // вызываем тестируемый метод
-        newUser.setName("Petr Ivanov");
-        Optional<User> optSavedUser = userStorage.update(newUser);
+        user.setName("another Name");
+        Optional<User> optSavedUser = userStorage.updateUser(user);
         assertTrue(optSavedUser.isPresent());
         User savedUser = optSavedUser.get();
         // проверяем утверждения
         assertThat(savedUser)
                 .isNotNull()
                 .usingRecursiveComparison()
-                .isEqualTo(newUser);
+                .isEqualTo(user);
     }
 
     @Test
     void delete() {
         // Подготавливаем данные для теста
         UserDbStorage userStorage = new UserDbStorage(jdbcTemplate);
-        User newUser = new User("vanya123", "Ivan Petrov", "user@email.ru",
-                LocalDate.of(1990, 1, 1));
-        newUser.setId(userStorage.add(newUser).orElseThrow().getId());
+        User user = new User.UserBuilder()
+                .login("userLogin")
+                .name("user Name")
+                .email("user@yandex.ru")
+                .birthday(LocalDate.of(1990, 1, 1))
+                .build();
+        user.setId((userStorage.addUser(user).getId()));
         // вызываем тестируемый метод
-        userStorage.delete();
+        userStorage.deleteAllUsers();
         // проверяем утверждения
-        assertTrue(userStorage.getAll().isEmpty());
+        assertTrue(userStorage.getAllUsers().isEmpty());
     }
 
     @Test
     void getAll() {
         // Подготавливаем данные для теста
         UserDbStorage userStorage = new UserDbStorage(jdbcTemplate);
-        User newUserOne = new User("vanya123", "Ivan Petrov", "userOne@email.ru",
-                LocalDate.of(1990, 1, 1));
-        newUserOne.setId(userStorage.add(newUserOne).orElseThrow().getId());
-        User newUserTwo = new User("vanya456", "Petr Ivanov", "userTwo@email.ru",
-                LocalDate.of(1992, 2, 2));
-        newUserTwo.setId(userStorage.add(newUserTwo).orElseThrow().getId());
-        Collection<User> newUsers = new ArrayList<>();
-        newUsers.add(newUserOne);
-        newUsers.add(newUserTwo);
+        User userOne = new User.UserBuilder()
+                .login("userLoginOne")
+                .name("user Name One")
+                .email("userOne@yandex.ru")
+                .birthday(LocalDate.of(1990, 1, 1))
+                .build();
+        userOne.setId((userStorage.addUser(userOne).getId()));
+        User userTwo = new User.UserBuilder()
+                .login("userLoginTwo")
+                .name("user Name Two")
+                .email("userTwo@yandex.ru")
+                .birthday(LocalDate.of(1990, 2, 2))
+                .build();
+        userTwo.setId((userStorage.addUser(userTwo).getId()));
+        Collection<User> users = new ArrayList<>();
+        users.add(userOne);
+        users.add(userTwo);
         // вызываем тестируемый метод
-        Collection<User> savedUsers = userStorage.getAll();
+        Collection<User> savedUsers = userStorage.getAllUsers();
         // проверяем утверждения
         assertThat(savedUsers)
                 .isNotNull()
                 .usingRecursiveComparison()
-                .isEqualTo(newUsers);
+                .isEqualTo(users);
     }
 
     @Test
     void addToFriends() {
         // Подготавливаем данные для теста
         UserDbStorage userStorage = new UserDbStorage(jdbcTemplate);
-        User newUserOne = new User("vanya123", "Ivan Petrov", "userOne@email.ru",
-                LocalDate.of(1990, 1, 1));
-        newUserOne.setId(userStorage.add(newUserOne).orElseThrow().getId());
-        User newUserTwo = new User("vanya456", "Petr Ivanov", "userTwo@email.ru",
-                LocalDate.of(1992, 2, 2));
-        newUserTwo.setId(userStorage.add(newUserTwo).orElseThrow().getId());
-        Collection<User> newFriends = new ArrayList<>();
-        newFriends.add(newUserTwo);
+        User userOne = new User.UserBuilder()
+                .login("userLoginOne")
+                .name("user Name One")
+                .email("userOne@yandex.ru")
+                .birthday(LocalDate.of(1990, 1, 1))
+                .build();
+        userOne.setId((userStorage.addUser(userOne).getId()));
+        User userTwo = new User.UserBuilder()
+                .login("userLoginTwo")
+                .name("user Name Two")
+                .email("userTwo@yandex.ru")
+                .birthday(LocalDate.of(1990, 2, 2))
+                .build();
+        userTwo.setId((userStorage.addUser(userTwo).getId()));
+        Collection<User> friends = new ArrayList<>();
+        friends.add(userTwo);
         // вызываем тестируемый метод
-        userStorage.addToFriends(newUserOne.getId(), newUserTwo.getId());
-        userStorage.addToFriends(newUserTwo.getId(), newUserOne.getId());
+        userStorage.addToFriends(userOne.getId(), userTwo.getId());
+        userStorage.addToFriends(userTwo.getId(), userOne.getId());
         // проверяем утверждения
-        Collection<User> savedFriends = userStorage.getAllFriends(newUserOne.getId());
+        Collection<User> savedFriends = userStorage.getAllFriends(userOne.getId());
         assertThat(savedFriends)
                 .isNotNull() //
                 .usingRecursiveComparison()
-                .isEqualTo(newFriends);
+                .isEqualTo(friends);
 
         // меняем сценарий теста (отзыв заявки в друзья)
-        newFriends.remove(newUserTwo);
+        friends.remove(userTwo);
         // вызываем тестируемый метод
-        userStorage.deleteFromFriends(newUserOne.getId(), newUserTwo.getId());
+        userStorage.deleteFromFriends(userOne.getId(), userTwo.getId());
         // проверяем утверждения
-        savedFriends = userStorage.getAllFriends(newUserOne.getId());
+        savedFriends = userStorage.getAllFriends(userOne.getId());
         assertThat(savedFriends)
                 .isNotNull() //
                 .usingRecursiveComparison()
-                .isEqualTo(newFriends);
+                .isEqualTo(friends);
     }
 
     @Test
     void getCommonFriends() {
         // Подготавливаем данные для теста
         UserDbStorage userStorage = new UserDbStorage(jdbcTemplate);
-        User newUserOne = new User("vanya123", "Ivan Petrov", "userOne@email.ru",
-                LocalDate.of(1990, 1, 1));
-        newUserOne.setId(userStorage.add(newUserOne).orElseThrow().getId());
-        User newUserTwo = new User("vanya456", "Petr Ivanov", "userTwo@email.ru",
-                LocalDate.of(1992, 2, 2));
-        newUserTwo.setId(userStorage.add(newUserTwo).orElseThrow().getId());
-        User newUserThree = new User("chuvak789", "Ilya Ilukhov", "userThree@email.ru",
-                LocalDate.of(1993, 3, 3));
-        newUserThree.setId(userStorage.add(newUserThree).orElseThrow().getId());
-
-        Collection<User> newFriends = new ArrayList<>();
-        newFriends.add(newUserThree);
+        User userOne = new User.UserBuilder()
+                .login("userLoginOne")
+                .name("user Name One")
+                .email("userOne@yandex.ru")
+                .birthday(LocalDate.of(1990, 1, 1))
+                .build();
+        userOne.setId((userStorage.addUser(userOne).getId()));
+        User userTwo = new User.UserBuilder()
+                .login("userLoginTwo")
+                .name("user Name Two")
+                .email("userTwo@yandex.ru")
+                .birthday(LocalDate.of(1990, 2, 2))
+                .build();
+        userTwo.setId((userStorage.addUser(userTwo).getId()));
+        User userThree = new User.UserBuilder()
+                .login("userLoginThree")
+                .name("user Name Three")
+                .email("userThree@yandex.ru")
+                .birthday(LocalDate.of(1990, 3, 3))
+                .build();
+        userThree.setId((userStorage.addUser(userThree).getId()));
+        Collection<User> friends = new ArrayList<>();
+        friends.add(userThree);
         // вызываем тестируемый метод
-        userStorage.addToFriends(newUserOne.getId(), newUserThree.getId());
-        userStorage.addToFriends(newUserThree.getId(), newUserOne.getId());
-        userStorage.addToFriends(newUserTwo.getId(), newUserThree.getId());
-        userStorage.addToFriends(newUserThree.getId(), newUserTwo.getId());
+        userStorage.addToFriends(userOne.getId(), userThree.getId());
+        userStorage.addToFriends(userThree.getId(), userOne.getId());
+        userStorage.addToFriends(userTwo.getId(), userThree.getId());
+        userStorage.addToFriends(userThree.getId(), userTwo.getId());
         // проверяем утверждения
-        Collection<User> savedFriends = userStorage.getCommonFriends(newUserOne.getId(), newUserTwo.getId());
+        Collection<User> savedFriends = userStorage.getCommonFriends(userOne.getId(), userTwo.getId());
         assertThat(savedFriends)
                 .isNotNull() //
                 .usingRecursiveComparison()
-                .isEqualTo(newFriends);
+                .isEqualTo(friends);
 
         // меняем сценарий теста (отзыв заявки в друзья)
-        newFriends.remove(newUserThree);
+        friends.remove(userThree);
         // вызываем тестируемый метод
-        userStorage.deleteFromFriends(newUserOne.getId(), newUserThree.getId());
+        userStorage.deleteFromFriends(userOne.getId(), userThree.getId());
         // проверяем утверждения
-        savedFriends = userStorage.getCommonFriends(newUserOne.getId(), newUserTwo.getId());
+        savedFriends = userStorage.getCommonFriends(userOne.getId(), userTwo.getId());
         assertThat(savedFriends)
                 .isNotNull() //
                 .usingRecursiveComparison()
-                .isEqualTo(newFriends);
+                .isEqualTo(friends);
     }
 }

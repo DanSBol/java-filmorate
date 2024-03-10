@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
@@ -16,50 +17,13 @@ import java.util.*;
 
 @Component
 @Primary
+@RequiredArgsConstructor
 public class FilmDbStorage implements FilmStorage {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public FilmDbStorage(JdbcTemplate jdbcTemplate){
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
     @Override
-    public Collection<Genre> getAllGenres() {
-        String sql = "SELECT \"ID\", \"NAME\" " +
-                "FROM \"GENRES\" " +
-                "ORDER BY \"ID\";";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> makeGenre(rs));
-    }
-
-    @Override
-    public Optional<Genre> getGenre(int id) {
-        String sql = String.format("SELECT \"ID\", \"NAME\" " +
-                "FROM \"GENRES\" " +
-                "WHERE \"ID\" = %d;", id);
-        List<Genre> genres = new ArrayList<>(jdbcTemplate.query(sql, (rs, rowNum) -> makeGenre(rs)));
-        return (genres.isEmpty() ? Optional.empty() : Optional.of(genres.get(0)));
-    }
-
-    @Override
-    public Collection<Rating> getAllRatings() {
-        String sql = "SELECT \"ID\", \"NAME\" " +
-                "FROM \"RATINGS\" " +
-                "ORDER BY \"ID\";";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> makeRating(rs));
-    }
-
-    @Override
-    public Optional<Rating> getRating(int id) {
-        String sql = String.format("SELECT \"ID\", \"NAME\" " +
-                "FROM \"RATINGS\" " +
-                "WHERE \"ID\" = %d;", id);
-        List<Rating> ratings = new ArrayList<>(jdbcTemplate.query(sql, (rs, rowNum) -> makeRating(rs)));
-        return (ratings.isEmpty() ? Optional.empty() : Optional.of(ratings.get(0)));
-    }
-
-    @Override
-    public Optional<Film> get(int id) {
+    public Optional<Film> getFilm(int id) {
         String sql = String.format("SELECT f.\"ID\", f.\"NAME\", f.\"DESCRIPTION\", f.\"RELEASE_DATE\", " +
                 "f.\"DURATION\", r.\"ID\" \"MPA_ID\", r.\"NAME\" \"MPA_NAME\" " +
                 "FROM \"FILMS\" f " +
@@ -70,7 +34,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Film add(Film film) {
+    public Film addFilm(Film film) {
             String sql = String.format("INSERT INTO \"FILMS\" (\"NAME\", \"DESCRIPTION\", \"RELEASE_DATE\", " +
                     "\"DURATION\", \"MPA\") " +
                     "VALUES ('%s', '%s', '%s', %d, %d);",
@@ -116,7 +80,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Optional<Film> update(Film film) {
+    public Optional<Film> updateFilm(Film film) {
         String sql = String.format("UPDATE \"FILMS\" SET \"NAME\" = '%s', \"DESCRIPTION\" = '%s', " +
                 "\"RELEASE_DATE\" = '%s', \"DURATION\" = %d, \"MPA\" = %d " +
                 "WHERE \"ID\" = %d", film.getName(), film.getDescription(),
@@ -133,7 +97,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public void delete() {
+    public void deleteAllFilms() {
         String sql = "DELETE FROM \"LIKES\";";
         jdbcTemplate.update(sql);
         sql = "DELETE FROM \"FILM_GENRE\";";
@@ -143,7 +107,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Collection<Film> getAll() {
+    public Collection<Film> getAllFilms() {
         String sql = "SELECT f.\"ID\", f.\"NAME\", f.\"DESCRIPTION\", f.\"RELEASE_DATE\", f.\"DURATION\", " +
                 "r.\"ID\" \"MPA_ID\", r.\"NAME\" \"MPA_NAME\" " +
                 "FROM \"FILMS\" f " +
@@ -194,7 +158,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Collection<Film> getPopular(int count) {
+    public Collection<Film> getPopularFilms(int count) {
         String sql = String.format("SELECT f.\"ID\", f.\"NAME\", f.\"DESCRIPTION\", f.\"RELEASE_DATE\", " +
                 "f.\"DURATION\", " +
                 "r.\"ID\" \"MPA_ID\", r.\"NAME\" \"MPA_NAME\" " +
@@ -209,15 +173,15 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     private Film makeFilm(ResultSet rs) throws SQLException {
-        Film film = new Film();
-        film.setId(rs.getInt("ID"));
-        film.setName(rs.getString("NAME"));
-        film.setDescription(rs.getString("DESCRIPTION"));
-        film.setReleaseDate(rs.getDate("RELEASE_DATE").toLocalDate());
-        film.setDuration(rs.getInt("DURATION"));
-        film.setMpa(new Rating(rs.getInt("MPA_ID"), rs.getString("MPA_NAME")));
-        film.setGenres(getGenres(film.getId()));
-        return film;
+        return new Film.FilmBuilder()
+                .id(rs.getInt("ID"))
+                .name(rs.getString("NAME"))
+                .description(rs.getString("DESCRIPTION"))
+                .releaseDate(rs.getDate("RELEASE_DATE").toLocalDate())
+                .duration(rs.getInt("DURATION"))
+                .genres(getGenres(rs.getInt("ID")))
+                .mpa(new Rating(rs.getInt("MPA_ID"), rs.getString("MPA_NAME")))
+                .build();
     }
 
     private int makeCount(ResultSet rs) throws SQLException {
@@ -225,16 +189,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     private Genre makeGenre(ResultSet rs) throws SQLException {
-        Genre genre = new Genre();
-        genre.setId(rs.getInt(1));
-        genre.setName(rs.getString(2));
-        return genre;
-    }
-
-    private Rating makeRating(ResultSet rs) throws SQLException {
-        int id = rs.getInt("ID");
-        String name = rs.getString("NAME");
-        return new Rating(id, name);
+        return new Genre(rs.getInt(1), rs.getString(2));
     }
 
     private Set<Genre> getGenres(int id) {

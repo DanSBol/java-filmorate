@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
@@ -8,7 +9,6 @@ import ru.yandex.practicum.filmorate.model.User;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,13 +17,13 @@ import java.util.Optional;
 
 @Component
 @Primary
+@RequiredArgsConstructor
 public class UserDbStorage implements UserStorage {
+
     private final JdbcTemplate jdbcTemplate;
-    public UserDbStorage(JdbcTemplate jdbcTemplate){
-        this.jdbcTemplate = jdbcTemplate;
-    }
+
     @Override
-    public Optional<User> get(int id) {
+    public Optional<User> getUser(int id) {
         String sql = String.format("SELECT u.\"ID\", u.\"LOGIN\", u.\"NAME\", u.\"EMAIL\", u.\"BIRTHDAY\" " +
                 "FROM \"USERS\" u " +
                 "WHERE u.\"ID\" = %d;", id);
@@ -32,7 +32,7 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public Optional<User> add(User user) {
+    public User addUser(User user) {
         String sql = String.format("SELECT count(*) " +
                 "FROM \"USERS\" u " +
                 "WHERE u.\"LOGIN\" = '%s';", user.getLogin());
@@ -45,13 +45,14 @@ public class UserDbStorage implements UserStorage {
                     "FROM \"USERS\" u " +
                     "WHERE \"LOGIN\" = '%s';", user.getLogin());
             List<User> users = new ArrayList<>(jdbcTemplate.query(sql, (rs, rowNum) -> makeUser(rs)));
-            return (users.isEmpty() ? Optional.empty() : Optional.of(users.get(0)));
+            return users.get(0);
         } else {
             throw new AlreadyExistsException("User with this login already exists.");
         }
     }
+
     @Override
-    public Optional<User> update(User user) {
+    public Optional<User> updateUser(User user) {
         String sql = String.format("UPDATE \"USERS\" SET \"LOGIN\" = '%s', \"NAME\" = '%s', \"EMAIL\" = '%s', " +
                         "\"BIRTHDAY\" = '%s' " +
                         "WHERE \"ID\" = %d", user.getLogin(), user.getName(), user.getEmail(),
@@ -65,7 +66,7 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public void delete() {
+    public void deleteAllUsers() {
         String sql = "DELETE FROM \"LIKES\";";
         jdbcTemplate.update(sql);
         sql = "DELETE FROM \"FRIENDSHIP\";";
@@ -75,7 +76,7 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public Collection<User> getAll() {
+    public Collection<User> getAllUsers() {
         String sql = "SELECT u.\"ID\", u.\"LOGIN\", u.\"NAME\", u.\"EMAIL\", u.\"BIRTHDAY\" " +
                 "FROM \"USERS\" u;";
         return jdbcTemplate.query(sql, (rs, rowNum) -> makeUser(rs));
@@ -122,12 +123,13 @@ public class UserDbStorage implements UserStorage {
     }
 
     private User makeUser(ResultSet rs) throws SQLException {
-        int id = rs.getInt("ID");
-        String login = rs.getString("LOGIN");
-        String name = rs.getString("NAME");
-        String email = rs.getString("EMAIL");
-        LocalDate birthday = rs.getDate("BIRTHDAY").toLocalDate();
-        return new User(id, login, name, email, birthday);
+        return new User.UserBuilder()
+                .id(rs.getInt("ID"))
+                .login(rs.getString("LOGIN"))
+                .name(rs.getString("NAME"))
+                .email(rs.getString("EMAIL"))
+                .birthday(rs.getDate("BIRTHDAY").toLocalDate())
+                .build();
     }
 
     private int makeCount(ResultSet rs) throws SQLException {
