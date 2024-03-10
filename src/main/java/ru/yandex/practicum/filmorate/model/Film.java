@@ -7,7 +7,6 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.Set;
 
 @Data
@@ -27,7 +26,7 @@ public class Film {
     private Rating mpa;
     private Set<Integer> likes;
 
-    public Film (int id, String name, String description, LocalDate releaseDate, int duration, Set<Genre> genres,
+    public Film(int id, String name, String description, LocalDate releaseDate, int duration, Set<Genre> genres,
                  Rating mpa) {
         this.id = id;
         this.name = name;
@@ -39,7 +38,7 @@ public class Film {
         this.likes = null;
     }
 
-    public Film (String name, String description, LocalDate releaseDate, int duration, Set<Genre> genres,
+    public Film(String name, String description, LocalDate releaseDate, int duration, Set<Genre> genres,
                  Rating mpa) {
         this.id = 0;
         this.name = name;
