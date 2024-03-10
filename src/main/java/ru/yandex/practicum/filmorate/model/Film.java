@@ -30,7 +30,7 @@ public class Film {
     private int id;
     private Set<Integer> likes;
 
-    public Film(String name, String description, LocalDate releaseDate, int duration, Genre genre, Rating rating) {
+    public Film (String name, String description, LocalDate releaseDate, int duration, Genre genre, Rating rating) {
         this.name = name;
         this.description = description;
         this.releaseDate = releaseDate;
@@ -42,7 +42,7 @@ public class Film {
     }
 
     @Override
-    public String toString() {
+    public String toString () {
         String result = "Film{" +
                 "name='" + name + '\'' +
                 ", description='" + description + '\'' +
