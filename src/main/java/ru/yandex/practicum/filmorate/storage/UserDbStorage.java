@@ -18,13 +18,13 @@ import java.util.Optional;
 @Component
 @Primary
 public class UserDbStorage implements UserStorage {
-    
+
     private final JdbcTemplate jdbcTemplate;
-    
+
     public UserDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
-    
+
     @Override
     public Optional<User> get(int id) {
         String sql = String.format("SELECT u.\"ID\", u.\"LOGIN\", u.\"NAME\", u.\"EMAIL\", u.\"BIRTHDAY\" " +
@@ -53,7 +53,7 @@ public class UserDbStorage implements UserStorage {
             throw new AlreadyExistsException("User with this login already exists.");
         }
     }
-    
+
     @Override
     public Optional<User> update(User user) {
         String sql = String.format("UPDATE \"USERS\" SET \"LOGIN\" = '%s', \"NAME\" = '%s', \"EMAIL\" = '%s', " +
