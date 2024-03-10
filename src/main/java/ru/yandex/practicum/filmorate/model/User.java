@@ -13,6 +13,7 @@ import java.util.Set;
 
 @Data
 @EqualsAndHashCode(exclude = {"id"})
+@NoArgsConstructor
 public class User {
     @NotNull(message = "User login invalid.")
     @Pattern(regexp = "^\\S+$", message = "User login invalid.")
@@ -25,8 +26,6 @@ public class User {
     @NotNull
     private int id;
     private Set<Friendship> friends;
-
-    public User() {}
 
     public User(String login, String name, String email, LocalDate birthday) {
         this.login = login;
@@ -44,21 +43,5 @@ public class User {
         this.birthday = birthday;
         this.id = id;
         this.friends = new HashSet<>();
-    }
-
-    @Override
-    public String toString() {
-        String result = "User{" +
-                "login='" + login + '\'' +
-                ", name='" + name + '\'' +
-                ", email='" + email + '\'' +
-                ", birthday=" + birthday +
-                ", friends=" + friends;
-        if (id == 0) {
-            result += "}";
-        } else {
-            result += ", id=" + id + '}';
-        }
-        return result;
     }
 }
