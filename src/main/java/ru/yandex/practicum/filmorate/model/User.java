@@ -16,15 +16,17 @@ import java.util.Set;
 public class User {
     @NotNull(message = "User login invalid.")
     @Pattern(regexp = "^\\S+$", message = "User login invalid.")
-    private final String login;
+    private String login;
     private String name;
     @Email(message = "User Email invalid.")
-    private final String email;
+    private String email;
     @PastOrPresent(message = "User birthday invalid.")
-    private final LocalDate birthday;
+    private LocalDate birthday;
     @NotNull
     private int id;
     private Set<Friendship> friends;
+
+    public User() {}
 
     public User(String login, String name, String email, LocalDate birthday) {
         this.login = login;
@@ -32,6 +34,15 @@ public class User {
         this.email = email;
         this.birthday = birthday;
         this.id = 0;
+        this.friends = new HashSet<>();
+    }
+
+    public User(int id, String login, String name, String email, LocalDate birthday) {
+        this.login = login;
+        this.name = name;
+        this.email = email;
+        this.birthday = birthday;
+        this.id = id;
         this.friends = new HashSet<>();
     }
 

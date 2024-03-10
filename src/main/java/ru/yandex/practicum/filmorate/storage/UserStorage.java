@@ -8,7 +8,7 @@ import java.util.Optional;
 public interface UserStorage {
     Optional<User> get(int id);
 
-    User add(User user);
+    Optional<User> add(User user);
 
     Optional<User> update(User user);
 
@@ -16,9 +16,9 @@ public interface UserStorage {
 
     Collection<User> getAll();
 
-    User addToFriends(int id, int friendId);
+    void addToFriends(int id, int friendId);
 
-    User deleteFromFriends(int id, int friendId);
+    void deleteFromFriends(int id, int friendId);
 
     Collection<User> getAllFriends(int id);
 

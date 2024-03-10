@@ -5,26 +5,49 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.*;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Rating;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
 import java.time.LocalDate;
 import java.util.Collection;
-import java.util.Optional;
 
 @Slf4j
 @Service
 public class FilmService {
 
-    private final InMemoryFilmStorage inMemoryFilmStorage;
+    private final FilmStorage filmStorage;
 
     @Autowired
-    public FilmService(InMemoryFilmStorage inMemoryFilmStorage) {
-        this.inMemoryFilmStorage = inMemoryFilmStorage;
+    public FilmService(FilmStorage filmStorage) {
+        this.filmStorage = filmStorage;
+    }
+
+    public Collection<Genre> getAllGenres() {
+        log.info("Getting all genres");
+        return filmStorage.getAllGenres();
+    }
+
+    public Genre getGenre(int id) {
+        log.info("Getting genre (id = {})", id);
+        return filmStorage.getGenre(id)
+                .orElseThrow(() -> new NotFoundException("Genre not found."));
+    }
+
+    public Collection<Rating> getAllRatings() {
+        log.info("Getting all ratings");
+        return filmStorage.getAllRatings();
+    }
+
+    public Rating getRating(int id) {
+        log.info("Getting rating (id = {})", id);
+        return filmStorage.getRating(id)
+                .orElseThrow(() -> new NotFoundException("Rating not found."));
     }
 
     public Film get(int id) {
         log.info("Getting film (id = {})", id);
-        return inMemoryFilmStorage.get(id)
+        return filmStorage.get(id)
                 .orElseThrow(() -> new NotFoundException("Film not found."));
 
     }
@@ -32,42 +55,38 @@ public class FilmService {
     public Film add(Film film) {
         log.info("Creating film {}", film);
         validate(film);
-        return inMemoryFilmStorage.add(film);
+        return filmStorage.add(film);
     }
 
     public Film update(Film film) {
         log.info("Updating film {}", film);
         validate(film);
-        Optional<Film> optionalFilm = inMemoryFilmStorage.update(film);
-        if (optionalFilm.isEmpty()) {
-            throw new NotFoundException("Film not found.");
-        }
-        return optionalFilm.get();
+        return filmStorage.update(film).orElseThrow(() -> new NotFoundException("Film not found."));
     }
 
     public void delete() {
         log.info("Deleting all films");
-        inMemoryFilmStorage.delete();
+        filmStorage.delete();
     }
 
     public Collection<Film> getAll() {
         log.info("Getting all films");
-        return inMemoryFilmStorage.getAll();
+        return filmStorage.getAll();
     }
 
     public Film addLike(int id, int userId) {
         log.info("Adding film like");
-        return inMemoryFilmStorage.addLike(id, userId);
+        return filmStorage.addLike(id, userId).orElseThrow(() -> new NotFoundException("Film not found."));
     }
 
     public Film deleteLike(int id, int userId) {
         log.info("Deleting film like");
-        return inMemoryFilmStorage.deleteLike(id, userId);
+        return filmStorage.deleteLike(id, userId).orElseThrow(() -> new NotFoundException("Film not found."));
     }
 
     public Collection<Film> getPopular(int count) {
         log.info("Getting popular films");
-        return inMemoryFilmStorage.getPopular(count);
+        return filmStorage.getPopular(count);
     }
 
     private void validate(Film film) {

@@ -1,9 +1,15 @@
 package ru.yandex.practicum.filmorate.model;
 
-public enum Rating {
-    G, // у фильма нет возрастных ограничений
-    PG, // детям рекомендуется смотреть фильм с родителями
-    PG13, // детям до 13 лет просмотр не желателен
-    R, // лицам до 17 лет просматривать фильм можно только в присутствии взрослого
-    NC17 // лицам до 18 лет просмотр запрещён
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+import javax.validation.constraints.NotNull;
+
+@Data
+@EqualsAndHashCode(exclude = {"id"})
+public class Rating {
+    @NotNull
+    private final int id;
+    //@NotBlank(message = "Rating name invalid.")
+    private final String name;
 }

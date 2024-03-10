@@ -1,17 +1,37 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Rating;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
-@Component
+//@Component
 public class InMemoryFilmStorage implements FilmStorage {
     private final Map<Integer, Film> films = new HashMap<>();
 
     private int id = 0;
+
+    @Override
+    public Collection<Genre> getAllGenres() {
+        return null;
+    }
+
+    @Override
+    public Optional<Genre> getGenre(int id) {
+        return Optional.empty();
+    }
+
+    @Override
+    public Collection<Rating> getAllRatings() {
+        return null;
+    }
+
+    @Override
+    public Optional<Rating> getRating(int id) {
+        return Optional.empty();
+    }
 
     @Override
     public Optional<Film> get(int id) {
@@ -23,7 +43,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     public Film add(Film film) {
         film.setId(++id);
         films.put(film.getId(), film);
-        return film;
+        return films.get(film.getId());
     }
 
     @Override
@@ -47,7 +67,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film addLike(int id, int userId) {
+    public Optional<Film> addLike(int id, int userId) {
         if (!films.containsKey(id)) {
             throw new NotFoundException(String.format("Film (id = %s) not found.", id));
         }
@@ -57,11 +77,11 @@ public class InMemoryFilmStorage implements FilmStorage {
             newSet.add(userId);
             film.setLikes(newSet);
         }
-        return film;
+        return films.get(film.getId()) != null ? Optional.of(film) : Optional.empty();
     }
 
     @Override
-    public Film deleteLike(int id, int userId) {
+    public Optional<Film> deleteLike(int id, int userId) {
         if (!films.containsKey(id)) {
             throw new NotFoundException(String.format("Film (id = %s) not found.", id));
         }
@@ -72,15 +92,11 @@ public class InMemoryFilmStorage implements FilmStorage {
         }
         newSet.remove(userId);
         film.setLikes(newSet);
-        return film;
+        return films.get(film.getId()) != null ? Optional.of(film) : Optional.empty();
     }
 
     @Override
     public Collection<Film> getPopular(int count) {
-        Collection<Film> populars = new ArrayList<>();
-
-        List<Film> filmsByLikes = new ArrayList<>(films.values());
-        filmsByLikes.sort(Comparator.comparing(Film::getCountLikes).reversed());
-        return filmsByLikes.stream().limit(count).collect(Collectors.toList());
+        return null;
     }
 }

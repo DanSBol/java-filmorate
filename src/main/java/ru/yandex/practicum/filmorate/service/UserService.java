@@ -6,73 +6,67 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.time.LocalDate;
 import java.util.Collection;
-import java.util.Optional;
 
 @Slf4j
 @Service
 public class UserService {
 
-    private final InMemoryUserStorage inMemoryUserStorage;
+    private final UserStorage userStorage;
 
     @Autowired
-    public UserService(InMemoryUserStorage inMemoryUserStorage) {
-        this.inMemoryUserStorage = inMemoryUserStorage;
+    public UserService(UserStorage userStorage) {
+        this.userStorage = userStorage;
     }
 
     public User get(int id) {
         log.info("Getting user (id = {})", id);
-        return inMemoryUserStorage.get(id)
-                .orElseThrow(() -> new NotFoundException("User not found."));
+        return userStorage.get(id).orElseThrow(() -> new NotFoundException("User not found."));
     }
 
     public User add(User user) {
         log.info("Creating user {}", user);
         validate(user);
-        return inMemoryUserStorage.add(user);
+        return userStorage.add(user).orElseThrow(() -> new NotFoundException("User not found."));
     }
 
     public User update(User user) {
         log.info("Updating user {}", user);
         validate(user);
-        Optional<User> optionalUser = inMemoryUserStorage.update(user);
-        if (optionalUser.isEmpty()) {
-            throw new NotFoundException("User not found.");
-        }
-        return optionalUser.get();
+        return userStorage.update(user).orElseThrow(() -> new NotFoundException("User not found."));
     }
 
     public void delete() {
         log.info("Deleting all users");
-        inMemoryUserStorage.delete();
+        userStorage.delete();
     }
 
     public Collection<User> getAll() {
         log.info("Getting all users");
-        return inMemoryUserStorage.getAll();
+        return userStorage.getAll();
     }
 
-    public User addToFriends(int id, int friendId) {
+    public void addToFriends(int id, int friendId) {
         log.info("Adding to friends");
-        return inMemoryUserStorage.addToFriends(id, friendId);
+        userStorage.addToFriends(id, friendId);
     }
 
-    public User deleteFromFriends(int id, int friendId) {
+    public void deleteFromFriends(int id, int friendId) {
         log.info("Deleting from friends");
-        return inMemoryUserStorage.deleteFromFriends(id, friendId);
+        userStorage.deleteFromFriends(id, friendId);
     }
 
     public Collection<User> getAllFriends(int id) {
         log.info("Getting all friends");
-        return inMemoryUserStorage.getAllFriends(id);
+        return userStorage.getAllFriends(id);
     }
 
     public Collection<User> getCommonFriends(int id, int otherId) {
         log.info("Getting common friends");
-        return inMemoryUserStorage.getCommonFriends(id, otherId);
+        return userStorage.getCommonFriends(id, otherId);
     }
 
     private void validate(User user) {

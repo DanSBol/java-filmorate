@@ -1,11 +1,9 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 import ru.yandex.practicum.filmorate.annotation.MinimumDate;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
@@ -14,53 +12,42 @@ import java.util.Set;
 
 @Data
 @EqualsAndHashCode(exclude = {"id"})
+@NoArgsConstructor
 public class Film {
-    @NotBlank(message = "Film name invalid.")
-    private final String name;
-    @Size(max = 200, message = "Film description invalid.")
-    private final String description;
-    @MinimumDate(message = "Film release date invalid.")
-    private final LocalDate releaseDate;
-    @Positive(message = "Film duration invalid.")
-    private final int duration;
-    @NotNull
-    private final Genre genre;
-    @NotNull
-    private final Rating rating;
-    @NotNull
     private int id;
+    @NotBlank(message = "Film name invalid.")
+    private String name;
+    @Size(max = 200, message = "Film description invalid.")
+    private String description;
+    @MinimumDate(message = "Film release date invalid.")
+    private LocalDate releaseDate;
+    @Positive(message = "Film duration invalid.")
+    private int duration;
+    private Set<Genre> genres;
+    private Rating mpa;
     private Set<Integer> likes;
 
-    public Film(String name, String description, LocalDate releaseDate, int duration, Genre genre, Rating rating) {
+    public Film (int id, String name, String description, LocalDate releaseDate, int duration, Set<Genre> genres,
+                 Rating mpa) {
+        this.id = id;
         this.name = name;
         this.description = description;
         this.releaseDate = releaseDate;
         this.duration = duration;
-        this.genre = genre;
-        this.rating = rating;
+        this.genres = genres;
+        this.mpa = mpa;
+        this.likes = null;
+    }
+
+    public Film (String name, String description, LocalDate releaseDate, int duration, Set<Genre> genres,
+                 Rating mpa) {
         this.id = 0;
-        this.likes = new HashSet<>();
-    }
-
-    @Override
-    public String toString() {
-        String result = "Film{" +
-                "name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", releaseDate=" + releaseDate +
-                ", duration=" + duration +
-                ", genre=" + genre +
-                ", rating=" + rating +
-                ", likes=" + likes;
-        if (id == 0) {
-                result += "}";
-        } else {
-                result += ", id=" + id + '}';
-        }
-        return result;
-    }
-
-    public int getCountLikes() {
-        return this.likes.size();
+        this.name = name;
+        this.description = description;
+        this.releaseDate = releaseDate;
+        this.duration = duration;
+        this.genres = genres;
+        this.mpa = mpa;
+        this.likes = null;
     }
 }
