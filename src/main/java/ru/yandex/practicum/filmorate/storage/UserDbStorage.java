@@ -19,7 +19,7 @@ import java.util.Optional;
 @Primary
 public class UserDbStorage implements UserStorage {
     private final JdbcTemplate jdbcTemplate;
-    public UserDbStorage(JdbcTemplate jdbcTemplate){
+    public UserDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
     @Override
