@@ -11,35 +11,35 @@ import java.util.*;
 
 @Slf4j
 @RestController
-@RequestMapping("/films")
 @RequiredArgsConstructor
+@RequestMapping("/films")
 public class FilmController {
 
     private final FilmService filmService;
 
     @GetMapping("/{id}")
-    public Film get(@PathVariable(value = "id") Integer id) {
-        return filmService.get(id);
+    public Film getFilm(@PathVariable(value = "id") Integer id) {
+        return filmService.getFilm(id);
     }
 
     @PostMapping
-    public Film create(@Valid @RequestBody Film film) {
-        return filmService.add(film);
+    public Film createFilm(@Valid @RequestBody Film film) {
+        return filmService.addFilm(film);
     }
 
     @PutMapping
-    public Film update(@Valid @RequestBody Film film) {
-        return filmService.update(film);
+    public Film updateFilm(@Valid @RequestBody Film film) {
+        return filmService.updateFilm(film);
     }
 
     @DeleteMapping
-    public void delete() {
-        filmService.delete();
+    public void deleteAllFilms() {
+        filmService.deleteAllFilms();
     }
 
     @GetMapping
-    public Collection<Film> getAll() {
-        return filmService.getAll();
+    public Collection<Film> getAllFilms() {
+        return filmService.getAllFilms();
     }
 
     @PutMapping("/{id}/like/{userId}")
@@ -57,8 +57,8 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public Collection<Film> getPopular(
+    public Collection<Film> getPopularFilms(
             @RequestParam(value = "count", defaultValue = "10", required = false) Integer count) {
-        return filmService.getPopular(count);
+        return filmService.getPopularFilms(count);
     }
 }

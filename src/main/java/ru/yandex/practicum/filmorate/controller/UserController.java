@@ -18,42 +18,43 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/{id}")
-    public User get(@PathVariable(value = "id") Integer id) {
-        return userService.get(id);
+    public User getUser(@PathVariable(value = "id") Integer id) {
+        return userService.getUser(id);
     }
 
     @PostMapping
-    public User create(@Valid @RequestBody User user) {
-        return userService.add(user);
+    public User createUser(@Valid @RequestBody User user) {
+        System.out.println(user);
+        return userService.addUser(user);
     }
 
     @PutMapping
-    public User update(@Valid @RequestBody User user) {
-        return userService.update(user);
+    public User updateUser(@Valid @RequestBody User user) {
+        return userService.updateUser(user);
     }
 
     @DeleteMapping
-    public void delete() {
-        userService.delete();
+    public void deleteAllUsers() {
+        userService.deleteAllUsers();
     }
 
     @GetMapping
-    public Collection<User> getAll() {
-        return userService.getAll();
+    public Collection<User> getAllUsers() {
+        return userService.getAllUsers();
     }
 
     @PutMapping("/{id}/friends/{friendId}")
-    public User addToFriends(
+    public void addToFriends(
             @PathVariable(value = "id") Integer id,
             @PathVariable(value = "friendId") Integer friendId) {
-        return userService.addToFriends(id, friendId);
+        userService.addToFriends(id, friendId);
     }
 
     @DeleteMapping("/{id}/friends/{friendId}")
-    public User deleteFromFriends(
+    public void deleteFromFriends(
             @PathVariable(value = "id") Integer id,
             @PathVariable(value = "friendId") Integer friendId) {
-        return userService.deleteFromFriends(id, friendId);
+        userService.deleteFromFriends(id, friendId);
     }
 
     @GetMapping("/{id}/friends")
@@ -61,10 +62,10 @@ public class UserController {
         return userService.getAllFriends(id);
     }
 
-    @GetMapping("/{id}/friends/common/{otherId}")
+    @GetMapping("/{id}/friends/common/{friendId}")
     public Collection<User> getCommonFriends(
             @PathVariable(value = "id") Integer id,
-            @PathVariable(value = "otherId") Integer otherId) {
-        return userService.getCommonFriends(id, otherId);
+            @PathVariable(value = "friendId") Integer friendId) {
+        return userService.getCommonFriends(id, friendId);
     }
 }
