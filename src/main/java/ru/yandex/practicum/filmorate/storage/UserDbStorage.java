@@ -19,11 +19,11 @@ import java.util.Optional;
 @Primary
 public class UserDbStorage implements UserStorage {
     private final JdbcTemplate jdbcTemplate;
-    
+
     public UserDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
-    
+
     @Override
     public Optional<User> get(int id) {
         String sql = String.format("SELECT u.\"ID\", u.\"LOGIN\", u.\"NAME\", u.\"EMAIL\", u.\"BIRTHDAY\" " +
